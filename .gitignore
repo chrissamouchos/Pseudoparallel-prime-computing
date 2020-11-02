@@ -1,0 +1,5 @@
+#Ignore exercise's guideline
+instructions/
+
+#ignore .o files
+bin/*.o
