@@ -11,48 +11,58 @@ CC = gcc
 CFLAGS = -I$(INCLUDE_PATH) -pg
 
 #Define the dependencies
-DEP = 	main.c
+PDEP = root.c 			#Primary dependencies
+SDEP = inner_node.c 	#Secondary dependencies
 
 #Create the .o file with the needed functions
-OBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(DEP))
+POBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(PDEP))	#For primary program
+SOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(SDEP))	#For Secondary program
 
 #UNLEASH THE FUll POWER OF VALGRIND!!!
 FULLVAL = --leak-check=full -v
 
-# The executable programm
-EXEC = myprime
+# The executable programms
+PEXEC = myprime		#Primary program
+SEXEC = inner_node 	#Secondary program
 
-build : $(EXEC)
+#Compile all three main executables
+build : $(PEXEC) $(SEXEC)
 
-$(EXEC): $(OBJS)
-	$(CC) $(OBJS) -o $(EXEC) $(CFLAGS)
+#Compile Primary Executable
+$(PEXEC): $(POBJS) $(INNER_NODE)
+	$(CC) $(POBJS) -o $(PEXEC) $(CFLAGS)
 
+#Create all object independently
 $(OBJS_PATH)/%.o: $(SRC_PATH)/%.c
 	$(CC) -c $^ -o $@ $(CFLAGS)
 
+#Compile Secondary Executable
+$(SEXEC): $(SOBJS)
+	$(CC) $(SOBJS) -o $(SEXEC) $(CFLAGS)
+
 #Run the programm
-run: $(EXEC)
-	./$(EXEC)
+run: $(PEXEC) $(SEXEC)
+	./$(PEXEC)
 
 #Determine full valgrind
-fvalgrind: $(EXEC)
-	valgrind $(FULLVAL) ./$(EXEC)
+fvalgrind: $(PEXEC)
+	valgrind $(FULLVAL) ./$(PEXEC)
 
 #Determine simple valgrind
-svalgrind: $(EXEC)
-	valgrind ./$(EXEC)
+svalgrind: $(PEXEC)
+	valgrind ./$(PEXEC) 
 
-#Profile executed code for input1, then show analysis
+#Profiling for executed code, then show analysis on shell
 profiling:
 	{ \
-	gprof $(EXEC) gmon.out > analysis.txt;\
+	gprof $(PEXEC) gmon.out > analysis.txt;\
 	cat analysis.txt;\
 	rm -f gmon.out;\
 	}
 
-#Clean workspace
+#Clean workspace, delete all executables and gmon files
 clean:
 	{ \
-	rm -f $(OBJS) $(EXEC);\
+	rm -f $(SOBJS) $(POBJS) $(PEXEC) $(SEXEC);\
 	rm -f gmon.out;  \
 	}
