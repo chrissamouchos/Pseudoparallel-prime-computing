@@ -2,7 +2,6 @@
 INCLUDE_PATH = ./include
 SRC_PATH = ./src
 OBJS_PATH = ./bin
-INPUT = ./input
 
 #Define the compiler
 CC = gcc
@@ -29,7 +28,7 @@ SEXEC = inner_node 	#Secondary program
 build : $(PEXEC) $(SEXEC)
 
 #Compile Primary Executable
-$(PEXEC): $(POBJS) $(INNER_NODE)
+$(PEXEC): $(POBJS) $(SEXEC)
 	$(CC) $(POBJS) -o $(PEXEC) $(CFLAGS)
 
 #Create all object independently

@@ -1,31 +1,40 @@
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
+#include <string.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>		/* For file descriptors */
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <time.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
-int main(void){
+int main(int argc, char** argv){
 	pid_t pid;
-	int fd[2];
-	pipe(fd);
+	int status, fd;
+	char* root_node = "root_node";
+	status = mkfifo(root_node, 0666);
+	if(status < 0) perror("Pipe creation error");
 
-	char buf[1];
-	if((pid = fork()) == -1) perror("Fork error");
+	char buf[] = "Hello from parent!\n";
+
+	if((pid = fork()) < -1){
+		perror("Fork error");
+		exit(1);
+	}
+
 	if(pid == 0){
-		printf("I am child: %d\n", pid);
-		close(fd[1]);
-		read(fd[0], buf, 1);
-		printf("i found : %d\n", buf[0]);
+		printf("Creating inner_node...\n");
 		execl("./inner_node", "inner_node", NULL);
 	}
 	else{
 		printf("I am parent!\n");
-		close(fd[0]);
-		char i = 2;
-		buf[0] = i;
-		write(fd[1], buf, 2);
+		if(fd = open("root_node", O_WRONLY) < 0)
+			perror("Error open pipe");
+		if(fd = write(fd, buf, strlen(buf)) != strlen(buf))
+			perror("Error write in pipe");
 		wait(NULL);
 	}
-	close(fd[1]);
+	close(fd);
 	return 0;
 }
