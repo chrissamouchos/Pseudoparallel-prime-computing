@@ -16,8 +16,8 @@ int main(int argc, char** argv){
 	status = mkfifo(root_node, 0666);
 	if(status < 0) perror("Pipe creation error");
 
-	char* buff = malloc(sizeof(char)*20);
-	buff = "Hello from parent!\n";
+	char* buf = malloc(sizeof(char)*20);
+	buf = "Hello from parent!\n";
 
 	if((pid = fork()) < -1){
 		perror("Fork error");

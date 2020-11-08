@@ -18,5 +18,6 @@ int main(int argc, char** argv){
 	printf("Received %s\n", str);
 	printf("End of inner node\n");
 	close(fd);
+	
 	return 0;
 }
