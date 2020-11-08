@@ -14,14 +14,15 @@
 int main(int argc, char** argv){
 	pid_t pid;
 	pid = getpid();
-	printf("Child found: %d\n", atoi(argv[1]));
 	// int fd, status;
 	// char* root_node = "root_node";
 	// char str[100];
 	// status = open(root_node, O_RDONLY);
 	// read(fd, str, sizeof(str));
 	// printf("Received %s\n", str);
-	printf("End of inner node with id: %d\n", pid);
+	printf("Inner node id: %d\n", pid);
+	printf("Lower bound: %d\n", atoi(argv[1]));
+	printf("Upper bound: %d\n", atoi(argv[2]));
 	// close(fd);
 	return 0;
 }

@@ -44,7 +44,7 @@ $(SEXEC): $(SOBJS)
 
 #Run the programm
 run: $(PEXEC) $(SEXEC)
-	./$(PEXEC) -l 1 -u 12 -w 2
+	./$(PEXEC) -l 3 -u 12 -w 2
 
 #Determine full valgrind
 fvalgrind: $(PEXEC)

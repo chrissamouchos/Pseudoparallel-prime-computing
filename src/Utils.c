@@ -27,3 +27,29 @@ void usage(const char* command){		/*Print expected command format*/
 	reset();
 }
 /*----------------- END OF FUNCTIONS--------------------*/
+
+/*----------------START OF RANGE------------------------*/
+Range range_create(int range, int remainder){
+	Range r = malloc(sizeof(range));
+	r -> range = range;
+	r -> remainder = remainder;
+	return r;
+}
+
+void range_change(Range r, int range, int remainder){
+	r -> range = range;
+	r -> remainder = remainder;
+}
+
+void range_delete(Range r){
+	free(r);
+}
+/*----------------END OF RANGE--------------------------*/
+
+Range split(int n, int m, int NumOfChildren){
+	int var = m - n + 1;
+	int t_rem = var % NumOfChildren;
+	int t_ran = var / NumOfChildren;
+	Range r = range_create(t_ran, t_rem);
+	return r;
+}

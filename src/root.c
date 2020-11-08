@@ -15,6 +15,9 @@
 
 #include "Utils.h"
 
+#define TRUE 1
+#define FALSE 0
+
 int main(int argc, char** argv){
 	int NumOfChildren = 0;	/*Possible childern each node will have			*/
 	int c;					/*Possible Options								*/
@@ -54,15 +57,15 @@ int main(int argc, char** argv){
 
 	pid_t pid;						/*Process id 									*/
 	int status, fd;					/*Status to check validity, fd = file descriptor*/
-	
+	int flag = FALSE;
 	char* up = malloc(sizeof(int));
 	char* low = malloc(sizeof(int));
 
-	//sprintf(up, "%d", n);
-	//sprintf(low, "%d", m);
+	Range r = split(n, m, NumOfChildren);
+	if(r -> remainder != 0) flag = TRUE;
 
 	/*Create NumOfChildren inner - nodes with the respective pipes*/
-	for(int i = 0; i < NumOfChildren; i++){
+	for(int i = 1; i < NumOfChildren; i++){
 		
 		if((pid = fork()) < 0){		/*Fork validity check*/
 			red();
@@ -70,9 +73,21 @@ int main(int argc, char** argv){
 			reset();
 			exit(1);
 		}
-		if(pid == 0){  														/*Children stuff 		*/
+		if(pid == 0){  															/*Children stuff 		*/
 			printf("Creating inner_node...\n");
-			if((status = execl("./inner_node", "inner_node", low, NULL)) < 0){	/*Execl validity check 	*/
+			
+			n = i*(r->range);
+			sprintf(low, "%d", n);
+			
+			if((i == NumOfChildren - 1) && (flag == TRUE)){
+				m = n + r->range + r-> remainder;
+				sprintf(up, "%d", m);
+			}
+			else{
+				m = n + r->range;
+				sprintf(up, "%d", m);
+			}
+			if((status = execl("./inner_node", "inner_node", low, up, NULL)) < 0){	/*Execl validity check 	*/
 				red();
 				perror("Execl error");
 				reset();
@@ -81,7 +96,7 @@ int main(int argc, char** argv){
 		}
 	}
 	wait(NULL);
-	
+
 	free(up);
 	free(low);
 	// status = mkfifo(root_node, 0666);
