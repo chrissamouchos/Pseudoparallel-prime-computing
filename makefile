@@ -3,6 +3,8 @@ INCLUDE_PATH = ./include
 SRC_PATH = ./src
 OBJS_PATH = ./bin
 
+SHAREDOBJS = Utils.o
+
 #Define the compiler
 CC = gcc
 
@@ -10,12 +12,13 @@ CC = gcc
 CFLAGS = -I$(INCLUDE_PATH) -pg
 
 #Define the dependencies
-PDEP = root.c 			#Primary dependencies
-SDEP = inner_node.c 	#Secondary dependencies
+PDEP =	root.c \
+		Utils.c		#Primary dependencies
+SDEP = inner_node.c #Secondary dependencies
 
 #Create the .o file with the needed functions
-POBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(PDEP))	#For primary program
-SOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(SDEP))	#For Secondary program
+POBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(PDEP))							#For primary program
+SOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(SDEP) $(OBJS_PATH)/$(SHAREDOBJS))	#For Secondary program
 
 #UNLEASH THE FUll POWER OF VALGRIND!!!
 FULLVAL = --leak-check=full -v
@@ -41,7 +44,7 @@ $(SEXEC): $(SOBJS)
 
 #Run the programm
 run: $(PEXEC) $(SEXEC)
-	./$(PEXEC)
+	./$(PEXEC) -l 1 -u 12 -w 2
 
 #Determine full valgrind
 fvalgrind: $(PEXEC)
