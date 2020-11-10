@@ -20,9 +20,9 @@ int main(int argc, char** argv){
 	// status = open(root_node, O_RDONLY);
 	// read(fd, str, sizeof(str));
 	// printf("Received %s\n", str);
-	printf("Inner node id: %d\n", pid);
-	printf("Lower bound: %d\n", atoi(argv[1]));
-	printf("Upper bound: %d\n", atoi(argv[2]));
+
+	printf("ID: %d Lower bound: %d\n", pid, atoi(argv[1]));
+	printf("ID: %d Upper bound: %d\n", pid, atoi(argv[2]));
 	// close(fd);
 	return 0;
 }

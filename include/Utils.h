@@ -27,5 +27,8 @@ void reset();						/*Reset color to default		*/
 
 void usage(const char* command);	/*Print expected format 		*/
 
-Range split(int NumOfChildren, int n, int m); /*Split the numeric range*/
+Range find_range(int NumOfChildren, int n, int m); /*Split the numeric range*/
+
+void split_n_exec(int n, int m, int NumOfChildren, char* executable);/*Split to proper values then call and execute childer 	*/
+
 /*----------------- END OF FUNCTIONS--------------------*/

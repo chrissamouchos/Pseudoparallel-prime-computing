@@ -3,20 +3,17 @@
 / results. n,m are the boundaries that the program will search for primes	  */
 
 #include <stdio.h>
-#include <string.h>
+
 #include <stdlib.h>
 #include <signal.h>
-#include <unistd.h>		/* For file descriptors */
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <time.h>
 #include <fcntl.h>
-#include <sys/stat.h>
+#include <unistd.h>
 
 #include "Utils.h"
 
-#define TRUE 1
-#define FALSE 0
 
 int main(int argc, char** argv){
 	int NumOfChildren = 0;	/*Possible childern each node will have			*/
@@ -55,50 +52,14 @@ int main(int argc, char** argv){
 		reset(); 
 	}
 
-	pid_t pid;						/*Process id 									*/
-	int status, fd;					/*Status to check validity, fd = file descriptor*/
-	int flag = FALSE;
-	char* up = malloc(sizeof(int));
-	char* low = malloc(sizeof(int));
+	/*--------------Create inner nodes----------------------------*/
+	char* executable = "./inner_node";
+	split_n_exec(n, m, NumOfChildren, executable); /*Split n exec innernodes.*/
 
-	Range r = split(n, m, NumOfChildren);
-	if(r -> remainder != 0) flag = TRUE;
+	/*--------------End of Creation-------------------------------*/
 
-	/*Create NumOfChildren inner - nodes with the respective pipes*/
-	for(int i = 1; i < NumOfChildren; i++){
-		
-		if((pid = fork()) < 0){		/*Fork validity check*/
-			red();
-			perror("Fork error");
-			reset();
-			exit(1);
-		}
-		if(pid == 0){  															/*Children stuff 		*/
-			printf("Creating inner_node...\n");
-			
-			n = i*(r->range);
-			sprintf(low, "%d", n);
-			
-			if((i == NumOfChildren - 1) && (flag == TRUE)){
-				m = n + r->range + r-> remainder;
-				sprintf(up, "%d", m);
-			}
-			else{
-				m = n + r->range;
-				sprintf(up, "%d", m);
-			}
-			if((status = execl("./inner_node", "inner_node", low, up, NULL)) < 0){	/*Execl validity check 	*/
-				red();
-				perror("Execl error");
-				reset();
-				exit(2);
-			}
-		}
-	}
 	wait(NULL);
 
-	free(up);
-	free(low);
 	// status = mkfifo(root_node, 0666);
 	// if(status < 0) perror("Pipe creation error");
 
