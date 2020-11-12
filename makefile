@@ -3,6 +3,7 @@ INCLUDE_PATH = ./include
 SRC_PATH = ./src
 OBJS_PATH = ./bin
 
+#Shared .o file
 SHAREDOBJS = Utils.o
 
 #Define the compiler
@@ -15,10 +16,12 @@ CFLAGS = -I$(INCLUDE_PATH) -pg
 PDEP =	root.c \
 		Utils.c		#Primary dependencies
 SDEP = inner_node.c #Secondary dependencies
+DEP = leaf.c 		#Third-party dependencies
 
 #Create the .o file with the needed functions
 POBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(PDEP))							#For primary program
 SOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(SDEP) $(OBJS_PATH)/$(SHAREDOBJS))	#For Secondary program
+TOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(DEP))	#For Secondary program
 
 #UNLEASH THE FUll POWER OF VALGRIND!!!
 FULLVAL = --leak-check=full -v
@@ -26,24 +29,29 @@ FULLVAL = --leak-check=full -v
 # The executable programms
 PEXEC = myprime		#Primary program
 SEXEC = inner_node 	#Secondary program
+TEXEC = leaf		#Third-party program
 
 #Compile all three main executables
-build : $(PEXEC) $(SEXEC)
+build : $(PEXEC) $(SEXEC) $(TEXEC)
 
 #Compile Primary Executable
 $(PEXEC): $(POBJS) $(SEXEC)
 	$(CC) $(POBJS) -o $(PEXEC) $(CFLAGS)
 
-#Create all object independently
+#Create all objects independently
 $(OBJS_PATH)/%.o: $(SRC_PATH)/%.c
 	$(CC) -c $^ -o $@ $(CFLAGS)
 
 #Compile Secondary Executable
-$(SEXEC): $(SOBJS)
+$(SEXEC): $(SOBJS) $(TEXEC)
 	$(CC) $(SOBJS) -o $(SEXEC) $(CFLAGS)
 
-#Run the programm
-run: $(PEXEC) $(SEXEC)
+#Compile Third-party executable
+$(TEXEC): $(TOBJS)
+	$(CC) $(TOBJS) -o $(TEXEC) $(CFLAGS)
+
+#Run the program
+run: $(PEXEC) $(SEXEC) $(TEXEC)
 	./$(PEXEC) -l 0 -u 12 -w 3
 
 #Determine full valgrind
@@ -65,6 +73,6 @@ profiling:
 #Clean workspace, delete all executables and gmon files
 clean:
 	{ \
-	rm -f $(SOBJS) $(POBJS) $(PEXEC) $(SEXEC);\
+	rm -f $(SOBJS) $(POBJS) $(TOBJS) $(PEXEC) $(SEXEC) $(TEXEC);\
 	rm -f gmon.out;  \
 	}

@@ -16,3 +16,4 @@ If a process tries to read before something is written to the pipe, the process 
 - exit(): The C library function void exit(int status) terminates the calling process immediately. Any open file descriptors belonging to the process are closed and any children of the process are inherited by process 1, init, and the process parent is sent a SIGCHLD signal.
 
 !
+να δω τι κανει η select και η poll.

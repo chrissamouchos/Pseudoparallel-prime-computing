@@ -66,6 +66,9 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 	int flag = FALSE;
 	char* up = malloc(sizeof(int));
 	char* low = malloc(sizeof(int));
+	char* numof = malloc(sizeof(int));
+
+	sprintf(numof, "%d", NumOfChildren);
 
 	char* nameofexec = malloc(sizeof(char)*(strlen(executable)-2));
 	for(int i = 0; i < strlen(executable)-2; i++){
@@ -90,13 +93,9 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 			reset();
 			exit(1);
 		}
-		
-		if(pid == 0){  															/*Children stuff 		*/
-			printf("Creating inner_node...\n");
-			
+		if(pid == 0){  															/*Children stuff 		*/	
 			temp = i*(r->range) + n;
 			sprintf(low, "%d", temp);
-			
 			if((i == NumOfChildren - 1) && (flag == TRUE)){
 				m = temp + r-> remainder + r->range;
 				sprintf(up, "%d", m);
@@ -105,7 +104,7 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 				m = temp + r->range;
 				sprintf(up, "%d", m);
 			}
-			if((status = execl(executable, nameofexec, low, up, NULL)) < 0){	/*Execl validity check 	*/
+			if((status = execl(executable, nameofexec, low, up, numof, NULL)) < 0){	/*Execl validity check 	*/
 				red();
 				perror("Execl error");
 				reset();
@@ -117,4 +116,5 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 	free(up);
 	free(low);
 	free(nameofexec);
+	free(numof);
 }
