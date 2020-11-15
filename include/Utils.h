@@ -3,17 +3,17 @@
 /*----------------START OF RANGE-----------------------*/
 typedef struct
 {
-	int range;
-	int remainder;
+	int range;			/*range to sign to each child 			*/
+	int remainder;		/*remainder to be signed to last process*/
 }range;
 
-typedef range* Range;
+typedef range* Range;	/*pointer to struct range*/
 
-Range range_create(int range, int remainder);
+Range range_create(int range, int remainder);			/*create a struct and assign given values	*/
 
-void range_delete(Range range);
+void range_delete(Range range);							/*free all allocated space 					*/
 
-void range_change(Range r, int range, int remainder);
+void range_change(Range r, int range, int remainder);	/*change values of r struct with new  		*/
 /*----------------END OF RANGE--------------------------*/
 
 /*----------------- VARIOUS FUNCTIONS-------------------*/

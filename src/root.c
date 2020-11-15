@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 				NumOfChildren = atoi(optarg);
 				break;
 			case '?':
-				usage(argv[0]);
+				usage(argv[0]);	/*wrong input*/
 				return 1;
 		}	
 	}

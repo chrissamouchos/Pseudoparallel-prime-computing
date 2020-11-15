@@ -20,6 +20,7 @@ int main(int argc, char** argv){
 	printf("I am leaf\n");
 	printf("LID: %d Lower bound: %d\n", pid, atoi(argv[1]));
 	printf("LID: %d Upper bound: %d\n", pid, atoi(argv[2]));
+	printf("LID %d with id: %d\n",pid, atoi(argv[4]));
 	// close(fd);
 	return 0;
 }

@@ -1,5 +1,6 @@
 /*Library that contains the thee functions that returns a prime*/
-#pragma once
+
+#pragma once /*include only once*/
 
 int modular_pow(unsigned int base, unsigned int exponent, unsigned int mod); /*efficient power function*/
 
