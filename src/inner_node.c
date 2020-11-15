@@ -15,6 +15,7 @@ int main(int argc, char** argv){
 	reset();
 	pid_t pid;
 	pid = getpid();
+
 	// int fd, status;
 	// char* root_node = "root_node";
 	// char str[100];

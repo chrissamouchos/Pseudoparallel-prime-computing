@@ -57,6 +57,7 @@ int main(int argc, char** argv){
 	split_n_exec(n, m, NumOfChildren, executable); /*Split n exec innernodes.*/
 
 	/*--------------End of Creation-------------------------------*/
+	
 
 	wait(NULL);
 
