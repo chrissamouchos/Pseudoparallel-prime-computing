@@ -12,26 +12,8 @@
 #define FALSE 0
 
 /*----------------- VARIOUS FUNCTIONS-------------------*/
-void red(){
- 	printf("\033[1;31m");	/*bold red*/
-}
-
-void green(){
-	printf("\033[1;32m");	/*bold green*/
-}
-
-void cyan(){
-	printf("\033[1;36m");	/*bold cyan*/
-}
-
-void reset(){
-	printf("\033[0m");		/*reset color*/
-}
-
 void usage(const char* command){		/*Print expected command format*/
-	cyan();
 	printf("%s -l <lower bound> -u <upper bound> -w <Number of Children>\n",command);
-	reset();
 }
 /*----------------- END OF FUNCTIONS--------------------*/
 
@@ -63,7 +45,7 @@ Range find_range(int n, int m, int NumOfChildren){
 	return r;
 }
 
-void split_n_exec(int n, int m, int NumOfChildren, char* executable){
+void split_n_exec(int n, int m, int NumOfChildren, char* executable, pid_t root_id){
 	pid_t pid;						/*Process id 									*/
 	int status, fd;					/*Status to check validity, fd = file descriptor*/
 	int flag = FALSE;				/*flag to check existence of remainder 			*/
@@ -74,7 +56,9 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 	char* numof = malloc(sizeof(int));
 	char* is = malloc(sizeof(int));
 	char* nameofexec = malloc(sizeof(char)*(strlen(executable)-2));
+	char* sroot_id = malloc(sizeof(int));
 
+	sprintf(sroot_id, "%d", root_id);
 	sprintf(numof, "%d", NumOfChildren);	/*convert to string*/
 
 	for(int i = 0; i < strlen(executable)-2; i++){	/*dynamically store only the name of executable*/
@@ -83,9 +67,7 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 
 	Range r = find_range(n, m, NumOfChildren);	/*Compute range and remainder*/
 	if(m - n + 1 < NumOfChildren){
-		red();
 		perror("Wrong input, NumOfChildren too big\n");
-		reset();
 		exit(-1);
 	}
 	if(r -> remainder != 0) flag = TRUE;	/*flag to show existence of */
@@ -94,9 +76,7 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 	for(int i = 0; i < NumOfChildren; i++){
 		sprintf(is, "%d", i);		/*pass i as argument for process identification	*/
 		if((pid = fork()) < 0){		/*Fork validity check 							*/
-			red();
 			perror("Fork error");
-			reset();
 			exit(1);
 		}
 		if(pid == 0){  										/*Children stuff 		*/	
@@ -110,11 +90,8 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 				m = temp + r -> range;
 				sprintf(up, "%d", m);
 			}
-			if((status = execl(executable, nameofexec, low, up, numof, is, NULL)) < 0){	/*Execl validity check 	*/
-				red();
+			if((status = execl(executable, nameofexec, low, up, numof, is, sroot_id, NULL)) < 0){	/*Execl validity check 	*/
 				perror("Execl error");
-				reset();
-				exit(2);
 			}
 		}
 	}
@@ -127,4 +104,5 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable){
 	free(nameofexec);
 	free(numof);
 	free(is);
+	free(sroot_id);
 }

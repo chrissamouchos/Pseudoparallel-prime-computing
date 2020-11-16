@@ -12,7 +12,6 @@
 #include "Utils.h"
 
 int main(int argc, char** argv){
-	reset();
 	pid_t pid;
 	pid = getpid();
 
@@ -27,8 +26,9 @@ int main(int argc, char** argv){
 	printf("ID: %d Upper bound: %d\n", pid, atoi(argv[2]));
 
 	char* executable = "./leaf";
-	split_n_exec(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), executable);
+	split_n_exec(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), executable, atoi(argv[5]));
 	wait(NULL);
+	// kill(getppid(), SIGUSR1);
 	// close(fd);
 	return 0;
 }

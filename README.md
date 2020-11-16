@@ -17,3 +17,4 @@ If a process tries to read before something is written to the pipe, the process 
 
 !
 να δω τι κανει η select και η poll.
+εχω floating point exception, δηλαδη έχω unexpected NaN or devision by zero, λογικα μεσα στην split n exec ή στην main του myprime. Να το τσεκαρω, επιπλεον έχω memory leak.

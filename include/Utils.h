@@ -17,17 +17,9 @@ void range_change(Range r, int range, int remainder);	/*change values of r struc
 /*----------------END OF RANGE--------------------------*/
 
 /*----------------- VARIOUS FUNCTIONS-------------------*/
-void red();							/*Chane printing color to red 	*/
-
-void green();						/*Chane printing color to green	*/
-
-void cyan();						/*Change printing color to cyan */
-
-void reset();						/*Reset color to default		*/
-
-void usage(const char* command);	/*Print expected format 		*/
+void usage(const char* command);	/*Print expected format*/
 
 Range find_range(int NumOfChildren, int n, int m); /*Split the numeric range*/
 
-void split_n_exec(int n, int m, int NumOfChildren, char* executable);/*Split to proper values then call and execute childer 	*/
+void split_n_exec(int n, int m, int NumOfChildren, char* executable, pid_t pid); /*Split to proper values then call and execute childer 	*/
 /*----------------- END OF FUNCTIONS--------------------*/

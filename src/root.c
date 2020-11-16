@@ -3,7 +3,6 @@
 / results. n,m are the boundaries that the program will search for primes	  */
 
 #include <stdio.h>
-
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -11,9 +10,14 @@
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "Utils.h"
 
+volatile int signals_received = 0;
+
+void signal_handler(int signum);
 
 int main(int argc, char** argv){
 	int NumOfChildren = 0;	/*Possible childern each node will have			*/
@@ -39,27 +43,41 @@ int main(int argc, char** argv){
 	}
 	/*---------------End of Options Parsing----------------*/
 
-
 	if(n > m){			/*Check if given numbers are legit*/
-		red();
 		printf("Error: Lower bound greater than upper bound!\n");
-		reset();
 		return(2);
 	}
 	else{
-		cyan();			/*Print start execution message	  */
-		printf("Executing ./myprime within [%d,%d] with %d NumOfChildren\n", n, m, NumOfChildren);
-		reset(); 
+		/*Print start execution message	  */
+		printf("Executing ./myprime within [%d,%d] with %d NumOfChildren\n", n, m, NumOfChildren); 
 	}
 
 	/*--------------Create inner nodes----------------------------*/
 	char* executable = "./inner_node";
-	split_n_exec(n, m, NumOfChildren, executable); /*Split n exec innernodes.*/
+	pid_t root_pid = getpid();
+	signal(SIGUSR1, signal_handler);
+	split_n_exec(n, m, NumOfChildren, executable, root_pid); /*Split n exec innernodes.*/
 
 	/*--------------End of Creation-------------------------------*/
 	
+	int status;
+	char* name = malloc(sizeof(int));
+	char** fds = malloc(sizeof(char*)*NumOfChildren);
 
-	wait(NULL);
+	int* fd_ids = malloc(sizeof(int)*NumOfChildren);
+
+	/*---------Create named pipes for interprocess communication--*/
+	for(int i = 0; i < NumOfChildren; i++){
+		sprintf(name, "in%d", i);
+		fds[i] = malloc(sizeof(int)+2);
+		fds[i] = name;
+		status = mkfifo(name, 0666);
+		if(status < 0)
+			perror("Error, pipe creation");
+		fd_ids[i] = open(fds[i], O_RDONLY);
+	}
+	/*---------End of named pipes creation------------------------*/
+	// wait(NULL);
 
 	// status = mkfifo(root_node, 0666);
 	// if(status < 0) perror("Pipe creation error");
@@ -77,7 +95,22 @@ int main(int argc, char** argv){
 	// 	wait(NULL);
 	// }
 	// close(fd);
-	printf("End of root\n");
+	while(wait(NULL)>0);
+	printf("Num of USR1 Received : %d\n", signals_received);
+	
+	/*----------------Unlink all fifos-------------------*/
+	for(int i = 0; i < NumOfChildren; i++){
+		close(fd_ids[i]);
+		unlink(fds[i]);
+	}
 
+	free(name);
+	free(fds);
+	free(fd_ids);
+	
 	return 0;
+}
+
+void signal_handler(int signum){
+	signals_received++;
 }
