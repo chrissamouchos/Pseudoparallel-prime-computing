@@ -51,12 +51,12 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable, pid_t root_
 	int flag = FALSE;				/*flag to check existence of remainder 			*/
 
 	/*store values to strings to pass arguments to exec* */
-	char* up = malloc(sizeof(int));
-	char* low = malloc(sizeof(int));
-	char* numof = malloc(sizeof(int));
-	char* is = malloc(sizeof(int));
+	char up[20];
+	char low[20];
+	char numof[20];
+	char is[20];
 	char* nameofexec = malloc(sizeof(char)*(strlen(executable)-2));
-	char* sroot_id = malloc(sizeof(int));
+	char sroot_id[25];
 
 	sprintf(sroot_id, "%d", root_id);
 	sprintf(numof, "%d", NumOfChildren);	/*convert to string*/
@@ -83,7 +83,7 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable, pid_t root_
 			temp = i*(r->range) + n;
 			sprintf(low, "%d", temp);
 			if((i == NumOfChildren - 1) && (flag == TRUE)){		/*Last child with existing remainder*/
-				m = temp + r-> remainder + r->range;
+				m = temp + r -> remainder + r -> range;
 				sprintf(up, "%d", m);
 			}
 			else if((i == NumOfChildren - 1 && flag == FALSE)||(i != NumOfChildren - 1)){	/*any other case*/
@@ -99,10 +99,5 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable, pid_t root_
 	range_delete(r); /*destroy range struct */
 
 	/*free all allocated memory				*/
-	free(up);
-	free(low);
 	free(nameofexec);
-	free(numof);
-	free(is);
-	free(sroot_id);
 }

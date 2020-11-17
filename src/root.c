@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "Utils.h"
 
@@ -51,31 +52,32 @@ int main(int argc, char** argv){
 		/*Print start execution message	  */
 		printf("Executing ./myprime within [%d,%d] with %d NumOfChildren\n", n, m, NumOfChildren); 
 	}
+	
+	int status;
+	char name[24];
+	char** fds = malloc(sizeof(char*)*NumOfChildren);
+	int* fd_ids = malloc(sizeof(int)*NumOfChildren);
+
+	/*---------Create named pipes for interprocess communication--*/
+	for(int i = 0; i < NumOfChildren; i++){
+		sprintf(name, "in%d", i);
+		fds[i] = strdup(name);
+		status = mkfifo(name, 0666);
+		if(status < 0)
+			perror("Error, pipe creation");
+	}
 
 	/*--------------Create inner nodes----------------------------*/
 	char* executable = "./inner_node";
 	pid_t root_pid = getpid();
 	signal(SIGUSR1, signal_handler);
 	split_n_exec(n, m, NumOfChildren, executable, root_pid); /*Split n exec innernodes.*/
-
 	/*--------------End of Creation-------------------------------*/
-	
-	int status;
-	char* name = malloc(sizeof(int));
-	char** fds = malloc(sizeof(char*)*NumOfChildren);
 
-	int* fd_ids = malloc(sizeof(int)*NumOfChildren);
-
-	/*---------Create named pipes for interprocess communication--*/
-	for(int i = 0; i < NumOfChildren; i++){
-		sprintf(name, "in%d", i);
-		fds[i] = malloc(sizeof(int)+2);
-		fds[i] = name;
-		status = mkfifo(name, 0666);
-		if(status < 0)
-			perror("Error, pipe creation");
+	for(int i = 0; i < NumOfChildren; i++)
 		fd_ids[i] = open(fds[i], O_RDONLY);
-	}
+
+	// read(fd_ids[0], &n, 4);
 	/*---------End of named pipes creation------------------------*/
 	// wait(NULL);
 
@@ -104,7 +106,6 @@ int main(int argc, char** argv){
 		unlink(fds[i]);
 	}
 
-	free(name);
 	free(fds);
 	free(fd_ids);
 	

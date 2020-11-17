@@ -16,7 +16,8 @@ CFLAGS = -I$(INCLUDE_PATH) -pg
 PDEP =	root.c \
 		Utils.c		#Primary dependencies
 SDEP = inner_node.c \
-		Records.c 	#Secondary dependencies
+		Records.c \
+		Status.c 	#Secondary dependencies
 DEP = leaf.c 		#Third-party dependencies
 
 #Create the .o file with the needed functions
