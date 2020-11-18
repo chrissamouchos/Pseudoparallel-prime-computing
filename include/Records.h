@@ -24,4 +24,6 @@ Record create_node(int num, float time);			/*create a node with respective value
 
 void insert_node(Record_info head, Record node);	/*insert created node to simple linked list */
 
+Record insert_after_last(Record last, Record node); /*insert created node after previous last 	*/
+
 void destroy_records(Record_info head);				/*free all the allocated memory 			*/

@@ -17,6 +17,8 @@
 #include "Status.h"
 #include "Records.h"
 
+#define MSG_SZ 16
+
 int main(int argc, char** argv){
 	pid_t pid;
 	pid = getpid();
@@ -87,28 +89,26 @@ int main(int argc, char** argv){
 			}			
 		}
 	}
-	/* to be deleted */
-	Record tem = r -> next;
-	while(tem != NULL){
-		printf("%d %lf\n", tem -> number, tem -> time);
-		tem = tem -> next;
-	}
-
-	for(int i = 0; i < numof; i++){
-		printf("Time for W%d: %lf with id: %d\n", i, stats[i], pid);
-	}
-	/* end of deletion */
+	
+	while(wait(NULL)>0);	/*wait until all childern are finished*/
 
 	/*---------------Unlink all fifos----------------------*/
 	for(int i = 0; i < numof; i++){
 		close(s -> fifo_id[i]);
 		unlink(s -> fd_name[i]);
 	}
-
-	while(wait(NULL)>0);	/*wait until all childern are finished*/
+	
 
 	/*---------------Begin sending data to root------------*/
-	write(s -> fd_id, );
+	Record tem = r -> next;
+	while(tem != NULL){
+		printf("%d %lf\n", tem -> number, tem -> time);
+		tem = tem -> next;
+		write(temp -> fd_id, &(temp -> number), sizeof(int));
+		write(temp -> fd_id, &(temp -> time), sizeof(double));
+	}
+	close(fd_id);
+	/*---------------End of sending data to root-----------*/
 
 	/* free all allocated memory */
 	delete_status(s);

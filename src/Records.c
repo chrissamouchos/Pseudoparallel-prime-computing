@@ -48,6 +48,11 @@ void insert_node(Record_info head, Record node){
 	return;
 }
 
+Record insert_after_last(Record last, Record node){
+	last -> next = node;
+	return node;
+}
+
 void destroy_records(Record_info head){
 	Record temp = head -> next;			/*store head of list 				*/
 	Record to_destroy = head -> next;	/*pointer to node to be destroyed 	*/

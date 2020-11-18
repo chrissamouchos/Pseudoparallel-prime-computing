@@ -52,8 +52,8 @@ int main(int argc, char** argv){
 		printf("Executing ./myprime within [%d,%d] with %d NumOfChildren...\n", n, m, NumOfChildren); 
 	}
 	
-	int status;
-	char name[24];
+	int status;		/*flag to store info about mkfifo*/
+	char name[24];	/*max string named computed from max int to be stored + 2, also memory multiple of 2*/
 	char** fds = malloc(sizeof(char*)*NumOfChildren);
 	int* fd_ids = malloc(sizeof(int)*NumOfChildren);
 
@@ -65,7 +65,10 @@ int main(int argc, char** argv){
 		if(status < 0)
 			perror("Error, pipe creation");
 	}
+
+	printf("OUTPUT (per invocation of program):\n\n");
 	printf("Primes in [%d, %d] are: \n", n, m);
+	
 	/*--------------Create inner nodes----------------------------*/
 	char* executable = "./inner_node";
 	pid_t root_pid = getpid();
@@ -73,12 +76,13 @@ int main(int argc, char** argv){
 	split_n_exec(n, m, NumOfChildren, executable, root_pid); /*Split n exec innernodes.*/
 	/*--------------End of Creation-------------------------------*/
 
+	/*--------------Open pipes for Reading------------------------*/
 	for(int i = 0; i < NumOfChildren; i++)
 		fd_ids[i] = open(fds[i], O_RDONLY | O_NONBLOCK);
 
 
-	while(wait(NULL)>0);
-	printf("Num of USR1 Received : %d\n", signals_received);
+	while(wait(NULL)>0);									/*wait until all inner nodes have finished*/
+	printf("Num of USR1 Received : %d\n", signals_received);/*print all USR1 from leafs*/
 	
 	/*----------------Unlink all fifos-------------------*/
 	for(int i = 0; i < NumOfChildren; i++){
