@@ -24,7 +24,7 @@ DEP = leaf.c \
 #Create the .o file with the needed functions
 POBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(PDEP))							#For primary program
 SOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(SDEP) $(OBJS_PATH)/$(SHAREDOBJS))	#For Secondary program
-TOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(DEP))	#For Secondary program
+TOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(DEP))								#For Secondary program
 
 #UNLEASH THE FUll POWER OF VALGRIND!!!
 FULLVAL = --leak-check=full -v

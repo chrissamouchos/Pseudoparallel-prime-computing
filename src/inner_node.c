@@ -20,71 +20,74 @@
 int main(int argc, char** argv){
 	pid_t pid;
 	pid = getpid();
+	/*---------------Initialize values given from exec----*/
 	int low, up, numof, is, sroot_id;
 	low = atoi(argv[1]);
 	up = atoi(argv[2]);
 	numof = atoi(argv[3]);
 	is = atoi(argv[4]);
 	sroot_id = atoi(argv[5]);
+	/*---------------End of initialization-----------------*/
 
-	Status s = create_status(numof);
+	Status s = create_status(numof);							/*struct to store info about sending/receiving pipes*/
 
 	/*--------------Open pipe to send----------------------*/
-	sprintf(s -> send_pipe, "in%d", is);
-	s -> fd_id = open(s -> send_pipe, O_NONBLOCK | O_WRONLY);
+	sprintf(s -> send_pipe, "in%d", is);						/*open pipe to send to root*/
+	s -> fd_id = open(s -> send_pipe, O_NONBLOCK | O_WRONLY);	
 
-	Record_info r = create_head();
+	Record_info r = create_head();								/*create sorted simple linked list to store primes-times*/
 	/*-----------------Read info---------------------------*/
 
 	char* executable = "./leaf";
-	// printf("inner node with id: %d\n", pid);
+	// printf("inner node with id: %d\n", pid);					/*printf info to ensure proper function of exec*/
 
 	/*--------------Create and open pipes to read----------*/
 	for(int i = 0; i < numof; i++){
-		sprintf(s -> fd_name[i], "le%dp%d", i, getpid());
-		if(mkfifo(s -> fd_name[i], 0666) < 0)
+		sprintf(s -> fd_name[i], "le%dp%d", i, getpid());		/*unique names of leaf pipes*/
+		if(mkfifo(s -> fd_name[i], 0666) < 0)					/*create pipes*/
 			perror("Error, pipe creation");
 	}
 	
-	split_n_exec(low, up, numof, executable, sroot_id);
+	split_n_exec(low, up, numof, executable, sroot_id);			/*split numbers and create prover exe*/
 	
 	for(int i = 0; i < numof; i++)
-		s -> fifo_id[i] = open(s -> fd_name[i], O_RDONLY | O_NONBLOCK);
+		s -> fifo_id[i] = open(s -> fd_name[i], O_RDONLY | O_NONBLOCK);	/*non blocking open for created pipes*/
 
 	Record temp = NULL;
-	struct pollfd* pollfd = malloc(sizeof(struct pollfd) * numof);
-	int flag = 0;
+	struct pollfd* pollfd = malloc(sizeof(struct pollfd) * numof);		/*create info for polling*/
+	int flag = 0;														/*flag to indicate the end of data receiving*/
 
-	double* stats = malloc(sizeof(double)*numof);
+	double* stats = malloc(sizeof(double)*numof);	/*array of doubles to store execution time for all childs*/
 
-	while(s -> flag != numof){
+	while(s -> flag != numof){						/*while there are processes capable of sending data*/
 		for(int i = 0; i < numof; i++){
-			pollfd[i].fd = s -> fifo_id[i];
-			pollfd[i].events = POLLIN;
-			pollfd[i].revents = 0;
+			pollfd[i].fd = s -> fifo_id[i];			/*store all fifo ids						 */
+			pollfd[i].events = POLLIN;				/*POLLIN -> capable of receiving data		 */
+			pollfd[i].revents = 0;					/*if someone is ready to send, find id index */
 		}
-		printf("here %d\n", pid);
-		poll(pollfd, numof, -1);
-		int prime = 0;
-		double time = 0.0;
+		// printf("here %d\n", pid);
+		poll(pollfd, numof, -1);		/*-1 indicates blocking untill someone finishes sending		*/
+		int prime = 0;					/*where the prime will be stored 							*/
+		double time = 0.0;				/*where time will be stored 								*/
 		for(int i = 0; i < numof; i++){
 			if(pollfd[i].revents & POLLIN){
-				pollfd[i].revents = 0;
+				pollfd[i].revents = 0;						/*re-initialize sending index 			*/
 				read(pollfd[i].fd, &prime, sizeof(int));
 				read(pollfd[i].fd, &time, sizeof(double));
 				
-				if(prime == -1){
+				if(prime == -1){		/*when a process finished it sends -1 and execution time*/
 					s -> flag ++;
 					stats[i] = time;
 					pollfd[i].events = 0;
 				}
 				else{
-					temp = create_node(prime, time);
+					temp = create_node(prime, time);	/*create a node and do insertion sort in list*/
 					insert_node(r, temp);
 				}
 			}			
 		}
 	}
+	/* to be deleted */
 	Record tem = r -> next;
 	while(tem != NULL){
 		printf("%d %lf\n", tem -> number, tem -> time);
@@ -94,6 +97,7 @@ int main(int argc, char** argv){
 	for(int i = 0; i < numof; i++){
 		printf("Time for W%d: %lf with id: %d\n", i, stats[i], pid);
 	}
+	/* end of deletion */
 
 	/*---------------Unlink all fifos----------------------*/
 	for(int i = 0; i < numof; i++){
@@ -101,7 +105,12 @@ int main(int argc, char** argv){
 		unlink(s -> fd_name[i]);
 	}
 
-	while(wait(NULL)>0);
+	while(wait(NULL)>0);	/*wait until all childern are finished*/
+
+	/*---------------Begin sending data to root------------*/
+	write(s -> fd_id, );
+
+	/* free all allocated memory */
 	delete_status(s);
 	destroy_records(r);
 	free(stats);
