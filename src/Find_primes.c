@@ -4,9 +4,6 @@
 
 #include "Find_primes.h"
 
-#define TRUE 1
-#define FALSE 0
-
 int modular_pow(unsigned int base, unsigned int exponent, unsigned int mod){
   int result = 1;
   base = base % mod;                              // Update x if it is more than or  equal to p

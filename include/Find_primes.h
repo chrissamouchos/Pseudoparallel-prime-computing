@@ -2,6 +2,9 @@
 
 #pragma once /*include only once*/
 
+#define TRUE 1
+#define FALSE 0
+
 int modular_pow(unsigned int base, unsigned int exponent, unsigned int mod); /*efficient power function*/
 
 int prime_1(int n);	/*Search for divisors across all numbers*/

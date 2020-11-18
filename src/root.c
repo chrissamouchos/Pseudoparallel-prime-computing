@@ -76,27 +76,7 @@ int main(int argc, char** argv){
 	for(int i = 0; i < NumOfChildren; i++)
 		fd_ids[i] = open(fds[i], O_RDONLY | O_NONBLOCK);
 
-	// read(fd_ids[0], &n, 4);
-	/*---------End of named pipes creation------------------------*/
-	// wait(NULL);
 
-	// status = mkfifo(root_node, 0666);
-	// if(status < 0) perror("Pipe creation error");
-
-	// char* buf = malloc(sizeof(char)*20);
-	// buf =  "Hello from parent!\n";
-
-	
-	// else{
-	// 	printf("I am parent!\n");
-	// 	if(fd = open("root_node", O_WRONLY) < 0)
-	// 		perror("Error open pipe");
-	// 	if(fd = write(fd, buf, strlen(buf)) != strlen(buf))
-	// 		perror("Error write in pipe");
-	// 	wait(NULL);
-	// }
-	// close(fd);
-	
 	while(wait(NULL)>0);
 	printf("Num of USR1 Received : %d\n", signals_received);
 	

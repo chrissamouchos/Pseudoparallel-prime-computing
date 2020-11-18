@@ -11,6 +11,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <poll.h>
 
 #include "Utils.h"
 #include "Status.h"
@@ -36,7 +37,7 @@ int main(int argc, char** argv){
 	/*-----------------Read info---------------------------*/
 
 	char* executable = "./leaf";
-	printf("inner node with id: %d\n", pid);
+	// printf("inner node with id: %d\n", pid);
 
 	/*--------------Create and open pipes to read----------*/
 	for(int i = 0; i < numof; i++){
@@ -50,6 +51,50 @@ int main(int argc, char** argv){
 	for(int i = 0; i < numof; i++)
 		s -> fifo_id[i] = open(s -> fd_name[i], O_RDONLY | O_NONBLOCK);
 
+	Record temp = NULL;
+	struct pollfd* pollfd = malloc(sizeof(struct pollfd) * numof);
+	int flag = 0;
+
+	double* stats = malloc(sizeof(double)*numof);
+
+	while(s -> flag != numof){
+		for(int i = 0; i < numof; i++){
+			pollfd[i].fd = s -> fifo_id[i];
+			pollfd[i].events = POLLIN;
+			pollfd[i].revents = 0;
+		}
+		printf("here %d\n", pid);
+		poll(pollfd, numof, -1);
+		int prime = 0;
+		double time = 0.0;
+		for(int i = 0; i < numof; i++){
+			if(pollfd[i].revents & POLLIN){
+				pollfd[i].revents = 0;
+				read(pollfd[i].fd, &prime, sizeof(int));
+				read(pollfd[i].fd, &time, sizeof(double));
+				
+				if(prime == -1){
+					s -> flag ++;
+					stats[i] = time;
+					pollfd[i].events = 0;
+				}
+				else{
+					temp = create_node(prime, time);
+					insert_node(r, temp);
+				}
+			}			
+		}
+	}
+	Record tem = r -> next;
+	while(tem != NULL){
+		printf("%d %lf\n", tem -> number, tem -> time);
+		tem = tem -> next;
+	}
+
+	for(int i = 0; i < numof; i++){
+		printf("Time for W%d: %lf with id: %d\n", i, stats[i], pid);
+	}
+
 	/*---------------Unlink all fifos----------------------*/
 	for(int i = 0; i < numof; i++){
 		close(s -> fifo_id[i]);
@@ -59,6 +104,8 @@ int main(int argc, char** argv){
 	while(wait(NULL)>0);
 	delete_status(s);
 	destroy_records(r);
+	free(stats);
+	free(pollfd);
 	
 	return 0;
 }

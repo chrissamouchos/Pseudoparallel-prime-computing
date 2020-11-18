@@ -15,7 +15,7 @@
 int main(int argc, char** argv){
 	pid_t pid;
 	pid = getpid();
-	printf("leaf with id: %d\n", pid);
+	// printf("leaf with id: %d\n", pid);
 	int low, up, numof, is, sroot_id;
 	low = atoi(argv[1]);
 	up = atoi(argv[2]);
@@ -25,6 +25,7 @@ int main(int argc, char** argv){
 	sroot_id = atoi(argv[5]);
 
 	char* send_pipe = malloc(sizeof(char)*2 + 10);
+
 	/*--------------Open pipe to send----------------------*/
 	sprintf(send_pipe, "le%dp%d", is, getppid());
 	int fd_id = open(send_pipe, O_WRONLY | O_NONBLOCK);
@@ -40,37 +41,47 @@ int main(int argc, char** argv){
 				t_begin = clock();
 				prime_found = prime_1(cur);
 				t_end = clock();
-				prime_time += (double)(t_end - begin)*1000 / CLOCKS_PER_SEC;
-				//write();
-				//write();	
+				prime_time = (double)(t_end - t_begin)*1000 / CLOCKS_PER_SEC;
+				if(prime_found == TRUE){
+					write(fd_id, &cur, sizeof(int));
+					write(fd_id, &prime_time, sizeof(double));	
+				}
 			}
 			break;
+		
 		case 1:
 			for(; cur <= up; cur++){
 				t_begin = clock();
 				prime_found = prime_2(cur);
 				t_end = clock();
-				prime_time += (double)(t_end - begin)*1000 / CLOCKS_PER_SEC;
-				//write();
-				//write();
+				prime_time = (double)(t_end - t_begin)*1000 / CLOCKS_PER_SEC;
+				if(prime_found == TRUE){
+					write(fd_id, &cur, sizeof(int));
+					write(fd_id, &prime_time, sizeof(double));	
+				}
 			}
 			break;
+		
 		case 2:
 			for(; cur <= up; cur++){
 				t_begin = clock();
 				prime_found = my_prime(cur);
 				t_end = clock();
-				prime_time += (double)(t_end - begin)*1000 / CLOCKS_PER_SEC;
-				//write();
-				//write();
+				prime_time = (double)(t_end - t_begin)*1000 / CLOCKS_PER_SEC;
+				if(prime_found == TRUE){
+					write(fd_id, &cur, sizeof(int));
+					write(fd_id, &prime_time, sizeof(double));	
+				}
 			}
 			break;
 	}
 
 	clock_t end = clock();
-	time_spent += (double)(end - begin)*1000 / CLOCKS_PER_SEC;
+	time_spent = (double)(end - begin)*1000 / CLOCKS_PER_SEC;
 
-	//write
+	cur = -1;
+	write(fd_id, &cur, sizeof(int));
+	write(fd_id, &time_spent, sizeof(double));	
 
 	close(fd_id);
 	unlink(send_pipe);
