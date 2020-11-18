@@ -7,7 +7,6 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-#include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -50,7 +49,7 @@ int main(int argc, char** argv){
 	}
 	else{
 		/*Print start execution message	  */
-		printf("Executing ./myprime within [%d,%d] with %d NumOfChildren\n", n, m, NumOfChildren); 
+		printf("Executing ./myprime within [%d,%d] with %d NumOfChildren...\n", n, m, NumOfChildren); 
 	}
 	
 	int status;
@@ -66,7 +65,7 @@ int main(int argc, char** argv){
 		if(status < 0)
 			perror("Error, pipe creation");
 	}
-
+	printf("Primes in [%d, %d] are: \n", n, m);
 	/*--------------Create inner nodes----------------------------*/
 	char* executable = "./inner_node";
 	pid_t root_pid = getpid();
@@ -75,7 +74,7 @@ int main(int argc, char** argv){
 	/*--------------End of Creation-------------------------------*/
 
 	for(int i = 0; i < NumOfChildren; i++)
-		fd_ids[i] = open(fds[i], O_RDONLY);
+		fd_ids[i] = open(fds[i], O_RDONLY | O_NONBLOCK);
 
 	// read(fd_ids[0], &n, 4);
 	/*---------End of named pipes creation------------------------*/
@@ -85,7 +84,7 @@ int main(int argc, char** argv){
 	// if(status < 0) perror("Pipe creation error");
 
 	// char* buf = malloc(sizeof(char)*20);
-	// buf = "Hello from parent!\n";
+	// buf =  "Hello from parent!\n";
 
 	
 	// else{
@@ -97,6 +96,7 @@ int main(int argc, char** argv){
 	// 	wait(NULL);
 	// }
 	// close(fd);
+	
 	while(wait(NULL)>0);
 	printf("Num of USR1 Received : %d\n", signals_received);
 	
@@ -106,12 +106,13 @@ int main(int argc, char** argv){
 		unlink(fds[i]);
 	}
 
+	/*----------------Free all the allocated memory------*/
 	free(fds);
 	free(fd_ids);
 	
 	return 0;
 }
-
+/*--------------------Handle USR1 received---------------*/
 void signal_handler(int signum){
 	signals_received++;
 }

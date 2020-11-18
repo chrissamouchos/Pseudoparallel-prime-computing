@@ -43,7 +43,10 @@ int prime_2(int n){
 }
 
 int my_prime(int n){
-	int flag = -1, a = 2;
+	int flag = -1;
+	/*to be fixed for big numbers, set default a = 2*/
+	int a = 2;
+	
 	if(n % 2 == 0) return FALSE;
 	flag = modular_pow(a, n-1, n);
 	if(flag == 1) return TRUE;

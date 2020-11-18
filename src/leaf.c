@@ -15,6 +15,7 @@
 int main(int argc, char** argv){
 	pid_t pid;
 	pid = getpid();
+	printf("leaf with id: %d\n", pid);
 	int low, up, numof, is, sroot_id;
 	low = atoi(argv[1]);
 	up = atoi(argv[2]);
@@ -23,30 +24,54 @@ int main(int argc, char** argv){
 	int flag = is % 3;
 	sroot_id = atoi(argv[5]);
 
-	// switch(flag){
-	// 	case 0:
-	// 		// for(int i)
-	// 		// prime_1();
-	// 	case 1:
-	// 		// prime_2();
-	// 	case 2:
-	// 		// my_prime();
-
-	// }
 	char* send_pipe = malloc(sizeof(char)*2 + 10);
 	/*--------------Open pipe to send----------------------*/
-	sprintf(send_pipe, "le%d", is);
-	int fd_id = open(send_pipe, O_WRONLY);
+	sprintf(send_pipe, "le%dp%d", is, getppid());
+	int fd_id = open(send_pipe, O_WRONLY | O_NONBLOCK);
 
-	// int fd, status;
-	// char* root_node = "root_node";
-	// char str[100];
-	// status = open(root_node, O_RDONLY);
-	// read(fd, str, sizeof(str));
-	// printf("Received %s\n", str);
-	// printf("LID: %d Lower bound: %d\n", pid, atoi(argv[1]));
-	// printf("LID: %d Upper bound: %d\n", pid, atoi(argv[2]));
-	// printf("LID %d with id: %d\n",pid, atoi(argv[5]));
+	double prime_time = 0.0, time_spent = 0.0;
+	clock_t begin = clock(), t_begin, t_end;
+	int cur = low + 1;
+	int prime_found;
+	
+	switch(flag){
+		case 0:
+			for(; cur <= up; cur++){
+				t_begin = clock();
+				prime_found = prime_1(cur);
+				t_end = clock();
+				prime_time += (double)(t_end - begin)*1000 / CLOCKS_PER_SEC;
+				//write();
+				//write();	
+			}
+			break;
+		case 1:
+			for(; cur <= up; cur++){
+				t_begin = clock();
+				prime_found = prime_2(cur);
+				t_end = clock();
+				prime_time += (double)(t_end - begin)*1000 / CLOCKS_PER_SEC;
+				//write();
+				//write();
+			}
+			break;
+		case 2:
+			for(; cur <= up; cur++){
+				t_begin = clock();
+				prime_found = my_prime(cur);
+				t_end = clock();
+				prime_time += (double)(t_end - begin)*1000 / CLOCKS_PER_SEC;
+				//write();
+				//write();
+			}
+			break;
+	}
+
+	clock_t end = clock();
+	time_spent += (double)(end - begin)*1000 / CLOCKS_PER_SEC;
+
+	//write
+
 	close(fd_id);
 	unlink(send_pipe);
 

@@ -30,7 +30,7 @@ int main(int argc, char** argv){
 
 	/*--------------Open pipe to send----------------------*/
 	sprintf(s -> send_pipe, "in%d", is);
-	s -> fd_id = open(s -> send_pipe, O_WRONLY);
+	s -> fd_id = open(s -> send_pipe, O_NONBLOCK | O_WRONLY);
 
 	Record_info r = create_head();
 	/*-----------------Read info---------------------------*/
@@ -40,7 +40,7 @@ int main(int argc, char** argv){
 
 	/*--------------Create and open pipes to read----------*/
 	for(int i = 0; i < numof; i++){
-		sprintf(s -> fd_name[i], "le%d", i);
+		sprintf(s -> fd_name[i], "le%dp%d", i, getpid());
 		if(mkfifo(s -> fd_name[i], 0666) < 0)
 			perror("Error, pipe creation");
 	}
@@ -48,7 +48,7 @@ int main(int argc, char** argv){
 	split_n_exec(low, up, numof, executable, sroot_id);
 	
 	for(int i = 0; i < numof; i++)
-		s -> fifo_id[i] = open(s -> fd_name[i], O_RDONLY);
+		s -> fifo_id[i] = open(s -> fd_name[i], O_RDONLY | O_NONBLOCK);
 
 	/*---------------Unlink all fifos----------------------*/
 	for(int i = 0; i < numof; i++){

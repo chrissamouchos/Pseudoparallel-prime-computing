@@ -10,15 +10,16 @@ SHAREDOBJS = Utils.o
 CC = gcc
 
 # Compile options. Το -I<dir> λέει στον compiler να αναζητήσει εκεί include files
-CFLAGS = -I$(INCLUDE_PATH) -pg
+CFLAGS = -I$(INCLUDE_PATH) -pg -lm
 
 #Define the dependencies
 PDEP =	root.c \
-		Utils.c		#Primary dependencies
+		Utils.c			#Primary dependencies
 SDEP = inner_node.c \
 		Records.c \
-		Status.c 	#Secondary dependencies
-DEP = leaf.c 		#Third-party dependencies
+		Status.c 		#Secondary dependencies
+DEP = leaf.c \
+		Find_primes.c	#Third-party dependencies
 
 #Create the .o file with the needed functions
 POBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(PDEP))							#For primary program
