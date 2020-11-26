@@ -14,7 +14,8 @@ CFLAGS = -I$(INCLUDE_PATH) -pg -lm
 
 #Define the dependencies
 PDEP =	root.c \
-		Utils.c			#Primary dependencies
+		Utils.c \
+		Records.c			#Primary dependencies
 SDEP = inner_node.c \
 		Records.c \
 		Status.c 		#Secondary dependencies
@@ -55,7 +56,7 @@ $(TEXEC): $(TOBJS)
 
 #Run the program
 run: $(PEXEC) $(SEXEC) $(TEXEC)
-	./$(PEXEC) -l 0 -u 12 -w 3
+	./$(PEXEC) -l 1 -u 1000 -w 3
 
 #Determine full valgrind
 fvalgrind: $(PEXEC)

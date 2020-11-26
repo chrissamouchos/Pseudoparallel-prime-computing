@@ -9,8 +9,16 @@
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "Find_primes.h"
+
+char buffer[sizeof(int)+sizeof(double)];
+
+void filbuf(int prime, double time){
+	memmove(buffer, &prime, sizeof(int));
+	memmove(buffer + sizeof(int), &time, sizeof(double));
+}
 
 int main(int argc, char** argv){
 	pid_t pid;
@@ -32,7 +40,7 @@ int main(int argc, char** argv){
 
 	/*--------------Open pipe to send----------------------*/
 	sprintf(send_pipe, "le%dp%d", is, getppid());
-	int fd_id = open(send_pipe, O_WRONLY | O_NONBLOCK);	/*open sending pipe - non blocking*/
+	int fd_id = open(send_pipe, O_WRONLY);	/*open sending pipe - non blocking*/
 
 	double prime_time = 0.0, time_spent = 0.0;	/*time of prime finding and overall child execution	*/
 	clock_t begin = clock(), t_begin, t_end;
@@ -47,8 +55,11 @@ int main(int argc, char** argv){
 				t_end = clock();
 				prime_time = (double)(t_end - t_begin)*1000 / CLOCKS_PER_SEC;	/*print in msec		*/
 				if(prime_found == TRUE){										/*send time and num */
-					write(fd_id, &cur, sizeof(int));
-					write(fd_id, &prime_time, sizeof(double));	
+					// printf("leaf %d sends %d\n", pid, cur);
+					filbuf(cur, prime_time);
+					write(fd_id, buffer, sizeof(int) + sizeof(double));
+					// write(fd_id, &cur, sizeof(int));
+					// write(fd_id, &prime_time, sizeof(double));	
 				}
 			}
 			break;
@@ -60,8 +71,11 @@ int main(int argc, char** argv){
 				t_end = clock();
 				prime_time = (double)(t_end - t_begin)*1000 / CLOCKS_PER_SEC;
 				if(prime_found == TRUE){
-					write(fd_id, &cur, sizeof(int));
-					write(fd_id, &prime_time, sizeof(double));	
+					// printf("leaf %d sends %d\n", pid, cur);
+					filbuf(cur, prime_time);
+					write(fd_id, buffer, sizeof(int) + sizeof(double));
+					// write(fd_id, &cur, sizeof(int));
+					// write(fd_id, &prime_time, sizeof(double));	
 				}
 			}
 			break;
@@ -73,8 +87,11 @@ int main(int argc, char** argv){
 				t_end = clock();
 				prime_time = (double)(t_end - t_begin)*1000 / CLOCKS_PER_SEC;
 				if(prime_found == TRUE){
-					write(fd_id, &cur, sizeof(int));
-					write(fd_id, &prime_time, sizeof(double));	
+					// printf("leaf %d sends %d\n", pid, cur);
+					filbuf(cur, prime_time);
+					write(fd_id, buffer, sizeof(int) + sizeof(double));
+					// write(fd_id, &cur, sizeof(int));
+					// write(fd_id, &prime_time, sizeof(double));	
 				}
 			}
 			break;
@@ -85,11 +102,10 @@ int main(int argc, char** argv){
 
 	cur = -1;
 	write(fd_id, &cur, sizeof(int));
-	write(fd_id, &time_spent, sizeof(double));	
+	write(fd_id, &time_spent, sizeof(double));
 
 	/*---------------Unlink fifo----------------------*/
 	close(fd_id);
-	unlink(send_pipe);
 
 	kill(sroot_id, SIGUSR1);	/*send USR1 in root/myprime */
 	return 0;

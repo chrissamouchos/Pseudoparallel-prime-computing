@@ -59,7 +59,7 @@ void split_n_exec(int n, int m, int NumOfChildren, char* executable, pid_t root_
 	char sroot_id[25];
 
 	sprintf(sroot_id, "%d", root_id);
-	sprintf(numof, "%d", NumOfChildren);	/*convert to string*/
+	sprintf(numof, "%d", NumOfChildren);			/*convert to string*/
 
 	for(int i = 0; i < strlen(executable)-2; i++){	/*dynamically store only the name of executable*/
 		nameofexec[i] = executable[i+2];
