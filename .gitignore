@@ -1,9 +1,6 @@
 #Ignore exercise's guideline
 instructions/
 
-#Ignore .o files
-bin/*.o
-
 #Ignore gmon file, used for profiling
 gmon.out
 
