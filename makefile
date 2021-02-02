@@ -28,7 +28,7 @@ SOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(SDEP) $(OBJS_PATH)/$(SHAREDOBJS))	#For
 TOBJS = $(patsubst %.c,$(OBJS_PATH)/%.o,$(DEP))								#For Secondary program
 
 #UNLEASH THE FUll POWER OF VALGRIND!!!
-FULLVAL = --leak-check=full -v
+FULLVAL = --leak-check=full -v --trace -children=yes
 
 # The executable programms
 PEXEC = myprime		#Primary program

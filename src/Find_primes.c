@@ -1,5 +1,5 @@
-# include <stdio.h>
-# include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "Find_primes.h"
@@ -41,7 +41,7 @@ int prime_2(int n){
 
 int my_prime(int n){
 	int flag = -1;
-	/*to be fixed for big numbers, set default a = 2*/
+	/*set default a = 2*/
 	int a = 2;
 	
 	if(n % 2 == 0) return FALSE;
