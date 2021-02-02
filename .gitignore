@@ -6,6 +6,3 @@ gmon.out
 
 #Ignore profiling txt
 analysis.txt
-
-#Ingore image
-Capture.png
