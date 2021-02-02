@@ -9,6 +9,7 @@ The folder is separated to 3 main folders.
 - bin, which contains the binary outpout of source files
 - include, which contains the customed libraries with function-prototypes
 - src, which contains the source code of whole project
+
 The code compiles and runs with the aid of makefile. Furthermore, for detailed execution profiling and valgrind(both simple and complex) is supported with respective commands. The "clean" command deletes binary files, executables and gmon.out files.
 
 ### Program hieararchy
