@@ -17,7 +17,11 @@
 #include "Utils.h"
 #include "Records.h"
 
+<<<<<<< HEAD
 volatile int signals_received = 0; /*Volatile: This variable could be changed unexpectedly*/
+=======
+volatile int signals_received = 0;
+>>>>>>> refs/remotes/origin/main
 int errno;
 
 void signal_handler(int signum);	/*Simple signal handler prototype*/
@@ -83,6 +87,60 @@ int main(int argc, char** argv){
 	/*--------------Open pipes for Reading------------------------*/
 	for(int i = 0; i < NumOfChildren; i++)
 		fd_ids[i] = open(fds[i], O_RDONLY);
+<<<<<<< HEAD
+=======
+
+	Record_info r = create_head();
+	Record temp = NULL;
+	int prime = 0, flag = 0;
+	double time = 0.0;
+	// struct pollfd* pollfd = malloc(sizeof(struct pollfd) * NumOfChildren);		/*create info for polling*/
+	
+	// for(int i = 0; i < NumOfChildren; i++){
+	// 	pollfd[i].fd = fd_ids[i];				/*store all fifo ids						 */
+	// 	pollfd[i].events = POLLIN;				/*POLLIN -> capable of receiving data		 */
+	// 	pollfd[i].revents = 0;					/*if someone is ready to send, find id index */
+	// }
+
+	// while(flag != NumOfChildren){
+	// 	poll(pollfd, NumOfChildren, -1);		/*-1 indicates blocking untill someone finishes sending		*/
+	// 	prime = 0;
+	// 	time = 0.0;
+	// 	for(int i = 0; i < NumOfChildren; i++){
+	// 		if(pollfd[i].revents & POLLIN){
+	// 			pollfd[i].revents = 0;						/*re-initialize sending index 			*/
+	// 			read(pollfd[i].fd, &prime, sizeof(int));
+	// 			read(pollfd[i].fd, &time, sizeof(double));
+				
+	// 			if((prime == -1)&&(time == 0.0)){		/*when a process finished it sends -1 and execution time*/
+	// 				flag ++;
+	// 				pollfd[i].events = 0;
+	// 			}
+	// 			else{
+	// 				temp = create_node(prime, time);	/*create a node and do insertion sort in list*/
+	// 				insert_node(r, temp);
+	// 				r -> size++;
+	// 			}
+	// 		}			
+	// 	}
+	// }
+
+
+	for(int i = 0; i < NumOfChildren; i++){
+		while(1){
+			read(fd_ids[i], &prime, sizeof(int));
+			read(fd_ids[i], &time, sizeof(double));
+			if(prime != -1){
+				temp = create_node(prime, time);	/*create a node and do insertion sort in list*/
+				insert_node(r, temp);
+			}
+			else break;
+		}
+		for(int j = 0; j < NumOfChildren; j++){
+			read(fd_ids[i], &stats[NumOfChildren*i + j], sizeof(double));	
+		}
+	}
+>>>>>>> refs/remotes/origin/main
 
 	Record_info r = create_head();
 	Record temp = NULL;
@@ -149,6 +207,23 @@ int main(int argc, char** argv){
 		printf("Time for W%d: %lf msecs\n", j, stats[j]);
 	}
 
+<<<<<<< HEAD
+=======
+	while(wait(NULL)>0);			/*wait until all inner nodes have finished*/
+	/*----------------Begin printing stats ---------------*/
+	Record tem = NULL;
+	tem = r -> next;
+	double min_time = 0.0, max_time = 0.0;
+	while(tem !=  NULL){
+		printf("%d %lf ms\n", tem -> number, tem -> time);
+		tem = tem -> next;
+	}
+
+	for(int j = 0; j < NumOfChildren*NumOfChildren; j++){
+		printf("Time for W%d: %lf msecs\n", j, stats[j]);
+	}
+
+>>>>>>> refs/remotes/origin/main
 	printf("Num of USR1 Received : %d\n", signals_received);/*print all USR1 from leafs*/
 	/*----------------End of printing stats -------------*/
 

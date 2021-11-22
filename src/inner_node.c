@@ -87,7 +87,11 @@ int main(int argc, char** argv){
 	// int rt;
 	// while(s -> flag != numof){						/*while there are processes capable of sending data*/	
 	// 	// printf("here %d\n", pid);
+<<<<<<< HEAD
 	// 	rt = poll(pollfd, numof, -1);			/*-1 indicates blocking until someone finishes sending		*/
+=======
+	// 	rt = poll(pollfd, numof, -1);		/*-1 indicates blocking until someone finishes sending		*/
+>>>>>>> refs/remotes/origin/main
 	// 	prime = 0;								/*where the prime will be stored 							*/
 	// 	time = 0.0;								/*where time will be stored 								*/
 	// 	for(int i = 0; i < numof; i++){
